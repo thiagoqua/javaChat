@@ -21,24 +21,23 @@ public class EnvidoServer{
         } catch(IOException e){}
     }
 
-    public void start(){
+    public int start(){                             //start del servidor devuelve lo leido
         BufferedReader br;
         BufferedWriter bw;
-        String leido;
+        int leido = -1;
         try{
             cl = ss.accept();
             in = cl.getInputStream();
             out = cl.getOutputStream();
             br = new BufferedReader(new InputStreamReader(in));
             bw = new BufferedWriter(new OutputStreamWriter(out));
-            if((leido = br.readLine()) != null){
-                // bw.write(leido);
-                // bw.newLine();
-                // bw.flush();
+            if((leido = br.read()) < 0){
                 System.out.println(leido);
             }
-        } catch(IOException e){}
-    }
+        } catch(IOException e){
+            System.out.println("no pudimos leer");
+        }
+    return leido;}
 
     public void close(){
         try{
@@ -49,11 +48,5 @@ public class EnvidoServer{
         } catch(IOException e){
             System.out.println("cannot close");
         }
-    }
-
-    public static void main(String[] args){
-        EnvidoServer es = new EnvidoServer(3333);
-        es.start();
-        es.close();
     }
 }

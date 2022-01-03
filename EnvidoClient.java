@@ -19,7 +19,7 @@ public class EnvidoClient{
         } catch(IOException e){}
     }
 
-    public void start(){
+    public void start(int hcode){                   //start del cliente recibe lo que se quiere mandar
         BufferedReader br;
         BufferedWriter bw;
         String escribo = new String("ANDA PADRE");
@@ -28,7 +28,7 @@ public class EnvidoClient{
             out = s.getOutputStream();
             br = new BufferedReader(new InputStreamReader(in));
             bw = new BufferedWriter(new OutputStreamWriter(out));
-            bw.write(escribo);
+            bw.write(hcode);
             bw.newLine();
             bw.flush();
         } catch(IOException e){}
@@ -44,9 +44,15 @@ public class EnvidoClient{
         }
     }
 
+    public boolean send(Object o){
+
+    return true;}
+
     public static void main(String[] args) {
+        Mazo m = new Mazo();
+        Carta toSend = m.sacar();
         EnvidoClient ec = new EnvidoClient("",3333);
-        ec.start();
+        ec.start(toSend.hashCode());
         ec.close();
     }
 }
