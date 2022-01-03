@@ -10,7 +10,9 @@ import java.net.Socket;
 public class EnvidoClient{
     private Socket s;
     private InputStream in;
-    private OutputStream out;
+    private OutputStream out;                   
+    BufferedReader br;
+    BufferedWriter bw;
 
     public EnvidoClient(String ip,int port){
         try{
@@ -19,40 +21,43 @@ public class EnvidoClient{
         } catch(IOException e){}
     }
 
-    public void start(int hcode){                   //start del cliente recibe lo que se quiere mandar
-        BufferedReader br;
-        BufferedWriter bw;
-        String escribo = new String("ANDA PADRE");
+    // public String welcome(){
+    //     String leido = new String();
+    //     try{
+    //         in = s.getInputStream();
+    //         br = new BufferedReader(new InputStreamReader(in));
+    //     } catch(IOException ie){
+    //         System.out.println("no pudimos leer");
+    //     }
+    // return leido;}
+
+    public boolean send(Object o){
         try{
-            in = s.getInputStream();
             out = s.getOutputStream();
-            br = new BufferedReader(new InputStreamReader(in));
             bw = new BufferedWriter(new OutputStreamWriter(out));
-            bw.write(hcode);
+            bw.write(o.toString());
             bw.newLine();
             bw.flush();
-        } catch(IOException e){}
-    }
+        } catch(IOException e){
+            return false;
+        }
+    return true;}
 
     public void close(){
         try{
             s.close();
-            in.close();
+            //in.close();
             out.close();
         } catch(IOException e){
             System.out.println("cannot close");
         }
     }
 
-    public boolean send(Object o){
-
-    return true;}
-
     public static void main(String[] args) {
         Mazo m = new Mazo();
         Carta toSend = m.sacar();
         EnvidoClient ec = new EnvidoClient("",3333);
-        ec.start(toSend.hashCode());
+        ec.send(Integer.toString(toSend.hashCode()));
         ec.close();
     }
 }

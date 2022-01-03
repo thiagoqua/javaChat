@@ -1,12 +1,17 @@
 public class Main{
     public static void main(String[] args){
-        int hcode;
+        int hcode = 0;
         Mazo mazo = new Mazo();
         String arrived;
+        Carta toSend = new Carta(1,"espada");
         EnvidoServer es = new EnvidoServer(3333);
-        hcode = es.start();
-        arrived = mazo.search(hcode);
-        System.out.println("carta:\t" + arrived + "\nhashcode:\t" + hcode);
+        arrived = es.welcome();
+        try{
+            hcode = Integer.valueOf(arrived);       //convierto el string a int para ver su hashcode
+        } catch(NumberFormatException nfe){
+            System.out.println("lo recibido no es un numero");
+        }
+        System.out.println("carta:\t" + arrived + "\nhashcode:\t" + mazo.search(hcode));    //busco la carta que corresponde al hashcode
         es.close();
     }
 }
