@@ -1,5 +1,6 @@
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -37,17 +38,16 @@ public class EnvidoServer{
         }
     return null;}
 
-    // public boolean send(Object o){
-    //     try{
-    //         out = cl.getOutputStream();
-    //         bw = new BufferedWriter(new OutputStreamWriter(out));
-    //         bw.write(o.toString());
-    //         bw.newLine();
-    //         bw.flush();
-    //     } catch(IOException ie){
-    //         return false;
-    //     }
-    // return true;}
+    public boolean send(Object o){
+        try{
+            out = cl.getOutputStream();
+            DataOutputStream dos = new DataOutputStream(out);
+            dos.writeUTF(o.toString());
+            dos.flush();
+        } catch(IOException ie){
+            return false;
+        }
+    return true;}
 
     public void close(){
         try{

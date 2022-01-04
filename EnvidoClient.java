@@ -1,5 +1,6 @@
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -21,15 +22,16 @@ public class EnvidoClient{
         } catch(IOException e){}
     }
 
-    // public String welcome(){
-    //     String leido = new String();
-    //     try{
-    //         in = s.getInputStream();
-    //         br = new BufferedReader(new InputStreamReader(in));
-    //     } catch(IOException ie){
-    //         System.out.println("no pudimos leer");
-    //     }
-    // return leido;}
+    public String welcome(){
+        String leido = new String();
+        try{
+            in = s.getInputStream();
+            DataInputStream dis = new DataInputStream(in);
+            leido = dis.readUTF();
+        } catch(IOException ie){
+            System.out.println("no pudimos leer");
+        }
+    return leido;}
 
     public boolean send(Object o){
         try{
@@ -54,10 +56,13 @@ public class EnvidoClient{
     }
 
     public static void main(String[] args) {
+        String leimos = new String();
         Mazo m = new Mazo();
         Carta toSend = m.sacar();
         EnvidoClient ec = new EnvidoClient("",3333);
         ec.send(Integer.toString(toSend.hashCode()));
+        leimos = ec.welcome();
+        System.out.println("DESDE CLIENTE\nleimos " + leimos);
         ec.close();
     }
 }

@@ -11,7 +11,11 @@ public class Main{
         } catch(NumberFormatException nfe){
             System.out.println("lo recibido no es un numero");
         }
-        System.out.println("carta:\t" + arrived + "\nhashcode:\t" + mazo.search(hcode));    //busco la carta que corresponde al hashcode
+        System.out.println("recibido:\ncarta:\t" + arrived + "\nhashcode:\t" + mazo.search(hcode));    //busco la carta que corresponde al hashcode
+        if(!es.send(toSend.toString()))
+            System.out.println("error de enviado");
+        else
+            System.out.println("ancho de espada enviado");
         es.close();
     }
 }
