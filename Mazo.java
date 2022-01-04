@@ -22,11 +22,11 @@ public class Mazo{
         mezclar(); mezclar();                                   //mando a mezclar
     }
 
-    public String search(int hcode){
+    public Carta search(int hcode){
         for(Carta tmp : cartas){
             if(tmp != null){
                 if(tmp.hashCode() == hcode)
-                    return tmp.toString();
+                    return tmp;
             }
         }
     return null;}

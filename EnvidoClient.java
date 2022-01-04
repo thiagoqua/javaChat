@@ -15,19 +15,42 @@ public class EnvidoClient{
     private OutputStream out;                   
     private DataInputStream din;
     private DataOutputStream dout;
+    private boolean isInitIn;
+    private boolean isInitOut;
 
     public EnvidoClient(String ip,int port){
         try{
             s = new Socket("localhost",port);
+            isInitIn = isInitOut = false;
             System.out.println("Client connected succesfully.");            
         } catch(IOException e){}
     }
 
-    public String recieve(){
-        String leido = new String();
+    private void inicializeOut(){
+        try{
+            out = s.getOutputStream();
+            dout = new DataOutputStream(out);
+            isInitOut = true;
+        } catch(IOException ie){
+            System.out.println("no se pudo iniciializar output");
+        }
+    }
+
+    private void inicializeIn(){
         try{
             in = s.getInputStream();
             din = new DataInputStream(in);
+            isInitIn = true;
+        } catch(IOException ie){
+            System.out.println("no se pudo inicializar input");
+        }
+    }
+
+    public String recieve(){
+        String leido = new String();
+        if(!isInitIn)
+            inicializeIn();
+        try{
             if((leido = din.readUTF()) != null)
                 return leido;
         } catch(IOException ie){
@@ -36,13 +59,13 @@ public class EnvidoClient{
     return null;}
 
     public boolean send(Object o){
+        if(!isInitOut)
+            inicializeOut();
         try{
-            out = s.getOutputStream();
-            dout = new DataOutputStream(out);
             dout.writeUTF(o.toString());
             dout.flush();
         } catch(IOException e){
-            return false;
+            System.out.println("no pudimos enviar");
         }
     return true;}
 
@@ -61,11 +84,14 @@ public class EnvidoClient{
     public static void main(String[] args) {
         String leimos = new String();
         Mazo m = new Mazo();
-        Carta toSend = m.sacar();
         EnvidoClient ec = new EnvidoClient("",3333);
-        ec.send(Integer.toString(toSend.hashCode()));
+        Carta toSend = new Carta();
+        for(int i = 0;i<3;++i){
+            toSend = m.sacar();
+            ec.send(toSend.hashCode());
+        }
         leimos = ec.recieve();
-        System.out.println("DESDE CLIENTE\nleimos " + leimos);
+        System.out.println("\nleimos " + leimos);
         ec.close();
     }
 }

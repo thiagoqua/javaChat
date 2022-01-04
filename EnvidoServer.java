@@ -18,32 +18,54 @@ public class EnvidoServer{
     private OutputStream out;
     private DataInputStream din;
     private DataOutputStream dout;
+    private boolean isInitIn;
+    private boolean isInitOut;
 
     public EnvidoServer(int port){
         try{
             ss = new ServerSocket(port);
+            isInitIn = isInitOut = false;
             System.out.println("Server created successfully.");
         } catch(IOException e){}
     }
 
-    public String recieve(){                             //go del servidor devuelve lo leido
-        String leido = new String();
+    private void inicializeIn(){
         try{
             cl = ss.accept();
             in = cl.getInputStream();
             din = new DataInputStream(in);
-            if((leido = din.readUTF()) != null){
+            isInitIn = true;
+        } catch(IOException ie){
+            System.out.println("no se pudo inicializar input");
+        }
+    }
+
+    private void inicializeOut(){
+        try{
+            out = cl.getOutputStream();
+            dout = new DataOutputStream(out);
+            isInitOut = true;
+        } catch(IOException ie){
+            System.out.println("no se pudo inicializar output");
+        }
+    }
+
+    public String recieve(){                             //go del servidor devuelve lo leido
+        String leido = new String();
+        if(!isInitIn)
+            inicializeIn();
+        try{
+            if((leido = din.readUTF()) != null)
                 return leido;
-            }
         } catch(IOException e){
             System.out.println("no pudimos leer");
         }
     return null;}
 
     public boolean send(Object o){
+        if(!isInitOut)
+            inicializeOut();
         try{
-            out = cl.getOutputStream();
-            dout = new DataOutputStream(out);
             dout.writeUTF(o.toString());
             dout.flush();
         } catch(IOException ie){
