@@ -23,9 +23,12 @@ public class Mazo{
     }
 
     public String search(int hcode){
-        for(Carta tmp : cartas)
-            if(tmp.hashCode() == hcode)
-                return tmp.toString();
+        for(Carta tmp : cartas){
+            if(tmp != null){
+                if(tmp.hashCode() == hcode)
+                    return tmp.toString();
+            }
+        }
     return null;}
 
     public void mezclar(){

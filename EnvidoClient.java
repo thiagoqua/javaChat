@@ -1,6 +1,7 @@
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -12,8 +13,8 @@ public class EnvidoClient{
     private Socket s;
     private InputStream in;
     private OutputStream out;                   
-    BufferedReader br;
-    BufferedWriter bw;
+    private DataInputStream din;
+    private DataOutputStream dout;
 
     public EnvidoClient(String ip,int port){
         try{
@@ -22,24 +23,24 @@ public class EnvidoClient{
         } catch(IOException e){}
     }
 
-    public String welcome(){
+    public String recieve(){
         String leido = new String();
         try{
             in = s.getInputStream();
-            DataInputStream dis = new DataInputStream(in);
-            leido = dis.readUTF();
+            din = new DataInputStream(in);
+            if((leido = din.readUTF()) != null)
+                return leido;
         } catch(IOException ie){
             System.out.println("no pudimos leer");
         }
-    return leido;}
+    return null;}
 
     public boolean send(Object o){
         try{
             out = s.getOutputStream();
-            bw = new BufferedWriter(new OutputStreamWriter(out));
-            bw.write(o.toString());
-            bw.newLine();
-            bw.flush();
+            dout = new DataOutputStream(out);
+            dout.writeUTF(o.toString());
+            dout.flush();
         } catch(IOException e){
             return false;
         }
@@ -48,8 +49,10 @@ public class EnvidoClient{
     public void close(){
         try{
             s.close();
-            //in.close();
+            in.close();
             out.close();
+            din.close();
+            dout.close();
         } catch(IOException e){
             System.out.println("cannot close");
         }
@@ -61,7 +64,7 @@ public class EnvidoClient{
         Carta toSend = m.sacar();
         EnvidoClient ec = new EnvidoClient("",3333);
         ec.send(Integer.toString(toSend.hashCode()));
-        leimos = ec.welcome();
+        leimos = ec.recieve();
         System.out.println("DESDE CLIENTE\nleimos " + leimos);
         ec.close();
     }

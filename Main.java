@@ -5,7 +5,7 @@ public class Main{
         String arrived;
         Carta toSend = new Carta(1,"espada");
         EnvidoServer es = new EnvidoServer(3333);
-        arrived = es.welcome();
+        arrived = es.recieve();
         try{
             hcode = Integer.valueOf(arrived);       //convierto el string a int para ver su hashcode
         } catch(NumberFormatException nfe){

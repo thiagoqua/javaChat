@@ -1,5 +1,7 @@
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.DataInputStream;
+import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,8 +16,8 @@ public class EnvidoServer{
     private Socket cl;
     private InputStream in;
     private OutputStream out;
-    BufferedReader br;
-    BufferedWriter bw;
+    private DataInputStream din;
+    private DataOutputStream dout;
 
     public EnvidoServer(int port){
         try{
@@ -24,13 +26,13 @@ public class EnvidoServer{
         } catch(IOException e){}
     }
 
-    public String welcome(){                             //go del servidor devuelve lo leido
+    public String recieve(){                             //go del servidor devuelve lo leido
         String leido = new String();
         try{
             cl = ss.accept();
             in = cl.getInputStream();
-            br = new BufferedReader(new InputStreamReader(in));
-            if((leido = br.readLine()) != null){
+            din = new DataInputStream(in);
+            if((leido = din.readUTF()) != null){
                 return leido;
             }
         } catch(IOException e){
@@ -41,9 +43,9 @@ public class EnvidoServer{
     public boolean send(Object o){
         try{
             out = cl.getOutputStream();
-            DataOutputStream dos = new DataOutputStream(out);
-            dos.writeUTF(o.toString());
-            dos.flush();
+            dout = new DataOutputStream(out);
+            dout.writeUTF(o.toString());
+            dout.flush();
         } catch(IOException ie){
             return false;
         }
@@ -54,7 +56,9 @@ public class EnvidoServer{
             ss.close();
             cl.close();
             in.close();
-            //out.close();
+            out.close();
+            din.close();
+            dout.close();
         } catch(IOException e){
             System.out.println("cannot close");
         }
