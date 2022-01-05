@@ -13,9 +13,9 @@ public class EnvidoServer{
 
     public EnvidoServer(int port){
         try{
-            server = new DatagramSocket(port);
-            info = new byte[128];
             this.port = port;
+            server = new DatagramSocket(this.port);
+            info = new byte[128];
             System.out.println("Server created successfully.");
         } catch(IOException e){}
     }
@@ -33,10 +33,11 @@ public class EnvidoServer{
     public boolean send(Object o){
         String toSend = o.toString();
         try{
-            pack = new DatagramPacket(toSend.getBytes(),toSend.length(),InetAddress.getLocalHost(),this.port);
-        } catch(UnknownHostException uhe){}
-        try{
-            server.send(pack);
+            DatagramSocket sendIt = new DatagramSocket();
+            pack = new DatagramPacket(toSend.getBytes(),toSend.length(),InetAddress.getLocalHost(),port);
+            sendIt.send(pack);
+        } catch(UnknownHostException uhe){
+            System.out.println("host no encontrado");
         } catch(IOException ioe){
             System.out.println("no se pudo enviar");
             return false;

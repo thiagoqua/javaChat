@@ -6,12 +6,11 @@ public class Main{
         String arrived = new String();
         Carta using,toSend;
         EnvidoServer server = new EnvidoServer(3333);
-
-        //arrived = server.welcome();
-        //System.out.println("recibimos\t" + arrived);
-        arrived = "enviamos desde cliente";
-        System.out.println("enviamos\t" + arrived);
-        server.send(arrived);
+        arrived = server.welcome();
+        System.out.println("recibimos\t->\t" + arrived);
         server.close();
+
+        EnvidoServer sserver = new EnvidoServer(3334);
+        sserver.send("buzz lightyear");
     }
 }
