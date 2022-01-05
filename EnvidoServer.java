@@ -1,88 +1,47 @@
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.DataInputStream;
-import java.io.DataOutput;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 public class EnvidoServer{
-    private ServerSocket ss;
-    private Socket cl;
-    private InputStream in;
-    private OutputStream out;
-    private DataInputStream din;
-    private DataOutputStream dout;
-    private boolean isInitIn;
-    private boolean isInitOut;
+
+    private DatagramSocket server;
+    private DatagramPacket pack;
+    private byte[] info;
+    private int port;
 
     public EnvidoServer(int port){
         try{
-            ss = new ServerSocket(port);
-            isInitIn = isInitOut = false;
+            server = new DatagramSocket(port);
+            info = new byte[128];
+            this.port = port;
             System.out.println("Server created successfully.");
         } catch(IOException e){}
     }
 
-    private void inicializeIn(){
+    public String welcome(){                             //go del servidor devuelve lo leido
         try{
-            cl = ss.accept();
-            in = cl.getInputStream();
-            din = new DataInputStream(in);
-            isInitIn = true;
-        } catch(IOException ie){
-            System.out.println("no se pudo inicializar input");
-        }
-    }
-
-    private void inicializeOut(){
-        try{
-            out = cl.getOutputStream();
-            dout = new DataOutputStream(out);
-            isInitOut = true;
-        } catch(IOException ie){
-            System.out.println("no se pudo inicializar output");
-        }
-    }
-
-    public String recieve(){                             //go del servidor devuelve lo leido
-        String leido = new String();
-        if(!isInitIn)
-            inicializeIn();
-        try{
-            if((leido = din.readUTF()) != null)
-                return leido;
+            pack = new DatagramPacket(info,info.length);
+            server.receive(pack);
         } catch(IOException e){
-            System.out.println("no pudimos leer");
+            System.out.println("no pudimos recibir");
+            return null;
         }
-    return null;}
+    return new String(pack.getData());}
 
     public boolean send(Object o){
-        if(!isInitOut)
-            inicializeOut();
+        String toSend = o.toString();
         try{
-            dout.writeUTF(o.toString());
-            dout.flush();
-        } catch(IOException ie){
+            pack = new DatagramPacket(toSend.getBytes(),toSend.length(),InetAddress.getLocalHost(),this.port);
+        } catch(UnknownHostException uhe){}
+        try{
+            server.send(pack);
+        } catch(IOException ioe){
+            System.out.println("no se pudo enviar");
             return false;
         }
     return true;}
 
-    public void close(){
-        try{
-            ss.close();
-            cl.close();
-            in.close();
-            out.close();
-            din.close();
-            dout.close();
-        } catch(IOException e){
-            System.out.println("cannot close");
-        }
-    }
+    public void close(){server.close();}
 }

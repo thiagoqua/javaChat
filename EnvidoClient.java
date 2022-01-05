@@ -1,97 +1,62 @@
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.net.Socket;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 public class EnvidoClient{
-    private Socket s;
-    private InputStream in;
-    private OutputStream out;                   
-    private DataInputStream din;
-    private DataOutputStream dout;
-    private boolean isInitIn;
-    private boolean isInitOut;
+
+    private DatagramSocket client;
+    private DatagramPacket pack;
+    private byte[] info;
+    private int port;
+    private InetAddress host;
 
     public EnvidoClient(String ip,int port){
         try{
-            s = new Socket("localhost",port);
-            isInitIn = isInitOut = false;
+            client = new DatagramSocket();
+            info = new byte[128];
+            this.port = port;
+            host = InetAddress.getByName(ip);
             System.out.println("Client connected succesfully.");            
         } catch(IOException e){}
     }
 
-    private void inicializeOut(){
+    public String welcome(){
         try{
-            out = s.getOutputStream();
-            dout = new DataOutputStream(out);
-            isInitOut = true;
-        } catch(IOException ie){
-            System.out.println("no se pudo iniciializar output");
+            pack = new DatagramPacket(info,info.length);
+            client.receive(pack);
+        } catch(IOException ioe){
+            System.out.println("no pudimos recibir");
+            return null;
         }
-    }
-
-    private void inicializeIn(){
-        try{
-            in = s.getInputStream();
-            din = new DataInputStream(in);
-            isInitIn = true;
-        } catch(IOException ie){
-            System.out.println("no se pudo inicializar input");
-        }
-    }
-
-    public String recieve(){
-        String leido = new String();
-        if(!isInitIn)
-            inicializeIn();
-        try{
-            if((leido = din.readUTF()) != null)
-                return leido;
-        } catch(IOException ie){
-            System.out.println("no pudimos leer");
-        }
-    return null;}
+    return new String(pack.getData());}
 
     public boolean send(Object o){
-        if(!isInitOut)
-            inicializeOut();
+        String toSend = o.toString();
         try{
-            dout.writeUTF(o.toString());
-            dout.flush();
-        } catch(IOException e){
-            System.out.println("no pudimos enviar");
+            pack = new DatagramPacket(toSend.getBytes(),toSend.length(),InetAddress.getLocalHost(),port);
+        } catch(UnknownHostException uhe){
+            System.out.println("no encontramos el host");
+        }
+        try{
+            client.send(pack);
+        } catch(IOException ioe){
+            System.out.println("no se pudo enviar");
+            return false;
         }
     return true;}
 
-    public void close(){
-        try{
-            s.close();
-            in.close();
-            out.close();
-            din.close();
-            dout.close();
-        } catch(IOException e){
-            System.out.println("cannot close");
-        }
-    }
+    public void close(){client.close();}
 
     public static void main(String[] args) {
         String leimos = new String();
         Mazo m = new Mazo();
-        EnvidoClient ec = new EnvidoClient("",3333);
-        Carta toSend = new Carta();
-        for(int i = 0;i<3;++i){
-            toSend = m.sacar();
-            ec.send(toSend.hashCode());
-        }
-        leimos = ec.recieve();
-        System.out.println("\nleimos " + leimos);
-        ec.close();
+        EnvidoClient client = new EnvidoClient("",3333);
+        Carta toSend = m.sacar(),using = new Carta();
+        //client.send("se envia desde cliente");
+        leimos = client.welcome();
+        System.out.println(leimos);
+        client.close();
     }
 }

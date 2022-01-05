@@ -31,6 +31,12 @@ public class Mazo{
         }
     return null;}
 
+    public Carta whoKillsIt(Carta c){
+        for(Carta temp : cartas)
+            if(Carta.returnOrden(temp) > Carta.returnOrden(c))
+                return temp;
+    return null;}
+
     public void mezclar(){
         Carta low[] = new Carta[20];                            //almacena las 20 primeras cartas del mazo
         Carta high[] = new Carta[20];                           //almacena las 20 segundas cartas del mazo

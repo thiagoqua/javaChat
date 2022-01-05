@@ -49,7 +49,7 @@ public class Carta{
     }
 	
     
-    public int returnOrden(Carta c){
+    public static int returnOrden(Carta c){
     	int i=0;
     	
         /*ANALIZO LAS CARTAS IMPORTANTES PRIMERO*/
