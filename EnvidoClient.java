@@ -7,29 +7,34 @@ import java.net.UnknownHostException;
 public class EnvidoClient{
 
     private DatagramSocket client;
+    private DatagramSocket receiver;
     private DatagramPacket pack;
-    private byte[] info;
-    private int port;
     private InetAddress host;
+    private byte[] info;
+    private int sport;              //puerto por el que va a enviar
+    private int rport;              //puerto por el que va a recibir
 
-    public EnvidoClient(String ip,int port){
+    public EnvidoClient(String ip,int sport,int rport){
         try{
             client = new DatagramSocket();
             info = new byte[128];
-            this.port = port;
-            //host = InetAddress.getByName(ip);
-            host = InetAddress.getLocalHost();
+            this.sport = sport;
+            this.rport = rport;
+            host = InetAddress.getByName("ip");
             System.out.println("Client connected succesfully.");            
         } catch(IOException e){}
     }
 
     public String welcome(){
         try{
-            client = new DatagramSocket(port);
+            receiver = new DatagramSocket(rport);
             pack = new DatagramPacket(info,info.length);
             client.receive(pack);
+            receiver.close();
         } catch(IOException ioe){
             System.out.println("no pudimos recibir");
+            System.out.println("puerto de recepcion " + rport);
+            ioe.printStackTrace();
             return null;
         }
     return new String(pack.getData());}
@@ -37,9 +42,9 @@ public class EnvidoClient{
     public boolean send(Object o){
         String toSend = o.toString();
         try{
-            DatagramSocket sendIt = new DatagramSocket();
-            pack = new DatagramPacket(toSend.getBytes(),toSend.length(),InetAddress.getLocalHost(),port);
-            sendIt.send(pack);
+            pack = new DatagramPacket(toSend.getBytes(),toSend.length(),InetAddress.getLocalHost(),sport);
+            client.send(pack);
+            System.out.println("envio desde el puerto " + pack.getPort());
         } catch(UnknownHostException uhe){
             System.out.println("no encontramos el host");
         } catch(IOException ioe){
@@ -49,16 +54,4 @@ public class EnvidoClient{
     return true;}
 
     public void close(){client.close();}
-
-    public static void main(String[] args) {
-        String leimos = new String();
-        Mazo m = new Mazo();
-        EnvidoClient client = new EnvidoClient("192.168.0.211",3333);
-        Carta toSend = m.sacar(),using = new Carta();
-        client.send("marcianitos");
-        client.close();
-        EnvidoClient sclient = new EnvidoClient("",3334);
-        leimos = sclient.welcome();
-        System.out.println("recibimos\t->\t" + leimos);
-    }
 }

@@ -7,14 +7,17 @@ import java.net.UnknownHostException;
 public class EnvidoServer{
 
     private DatagramSocket server;
+    private DatagramSocket receiver;
     private DatagramPacket pack;
     private byte[] info;
-    private int port;
+    private int sport;                  //puerto por el cual va a mandar
+    private int rport;                  //puerto por el cual va a recibir
 
-    public EnvidoServer(int port){
+    public EnvidoServer(int sport,int rport){
         try{
-            this.port = port;
-            server = new DatagramSocket(this.port);
+            this.sport = sport;
+            this.rport = rport;
+            server = new DatagramSocket(this.sport);
             info = new byte[128];
             System.out.println("Server created successfully.");
         } catch(IOException e){}
@@ -22,8 +25,11 @@ public class EnvidoServer{
 
     public String welcome(){                             //go del servidor devuelve lo leido
         try{
+            receiver = new DatagramSocket(rport);
             pack = new DatagramPacket(info,info.length);
-            server.receive(pack);
+            receiver.receive(pack);
+            receiver.close();
+            System.out.println("recibo desde el puerto " + pack.getPort());
         } catch(IOException e){
             System.out.println("no pudimos recibir");
             return null;
@@ -33,9 +39,9 @@ public class EnvidoServer{
     public boolean send(Object o){
         String toSend = o.toString();
         try{
-            DatagramSocket sendIt = new DatagramSocket();
-            pack = new DatagramPacket(toSend.getBytes(),toSend.length(),InetAddress.getLocalHost(),port);
-            sendIt.send(pack);
+            pack = new DatagramPacket(toSend.getBytes(),toSend.length(),InetAddress.getLocalHost(),sport);
+            server.send(pack);
+            System.out.println("envio desde el puerto " + pack.getPort());
         } catch(UnknownHostException uhe){
             System.out.println("host no encontrado");
         } catch(IOException ioe){
