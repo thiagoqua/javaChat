@@ -1,57 +1,44 @@
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.Socket;
 import java.net.UnknownHostException;
 
 public class EnvidoClient{
 
-    private DatagramSocket client;
-    private DatagramSocket receiver;
-    private DatagramPacket pack;
-    private InetAddress host;
-    private byte[] info;
-    private int sport;              //puerto por el que va a enviar
-    private int rport;              //puerto por el que va a recibir
+    private Socket client;
+    private DataInputStream din;
+    private DataOutputStream dout;
 
-    public EnvidoClient(String ip,int sport,int rport){
+    public EnvidoClient(String ip,int port){
         try{
-            client = new DatagramSocket();
-            info = new byte[128];
-            this.sport = sport;
-            this.rport = rport;
-            host = InetAddress.getByName("ip");
-            System.out.println("Client connected succesfully.");            
-        } catch(IOException e){}
+            client = new Socket(InetAddress.getByName(ip),port);
+            System.out.println("client succesfully connected");
+        } catch(IOException ioe){
+            ioe.printStackTrace();
+        }
     }
 
-    public String welcome(){
+    public String receive(){
+        String readed = new String();
         try{
-            receiver = new DatagramSocket(rport);
-            pack = new DatagramPacket(info,info.length);
-            client.receive(pack);
-            receiver.close();
+            din = new DataInputStream(client.getInputStream());
+            readed = din.readUTF();
         } catch(IOException ioe){
-            System.out.println("no pudimos recibir");
-            System.out.println("puerto de recepcion " + rport);
             ioe.printStackTrace();
-            return null;
         }
-    return new String(pack.getData());}
+    return readed;}
 
-    public boolean send(Object o){
-        String toSend = o.toString();
+    public void send(String str){
         try{
-            pack = new DatagramPacket(toSend.getBytes(),toSend.length(),InetAddress.getLocalHost(),sport);
-            client.send(pack);
-            System.out.println("envio desde el puerto " + pack.getPort());
-        } catch(UnknownHostException uhe){
-            System.out.println("no encontramos el host");
+            dout = new DataOutputStream(client.getOutputStream());
+            dout.writeUTF(str);
+            dout.flush();
         } catch(IOException ioe){
-            System.out.println("no se pudo enviar");
-            return false;
-        } 
-    return true;}
-
-    public void close(){client.close();}
+            ioe.printStackTrace();
+        }
+    }
 }
