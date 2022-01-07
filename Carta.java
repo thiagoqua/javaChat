@@ -50,6 +50,7 @@ public class Carta{
 	
     
     public static int returnOrden(Carta c){
+        initOrden();
     	int i=0;
     	
         /*ANALIZO LAS CARTAS IMPORTANTES PRIMERO*/

@@ -33,7 +33,7 @@ public class Mazo{
 
     public Carta whoKillsIt(Carta c){
         for(Carta temp : cartas)
-            if(Carta.returnOrden(temp) > Carta.returnOrden(c))
+            if(Carta.returnOrden(temp) < Carta.returnOrden(c))
                 return temp;
     return null;}
 

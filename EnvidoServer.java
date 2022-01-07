@@ -31,11 +31,22 @@ public class EnvidoServer{
         }
     return readed;}
 
-    public void send(String str){
+    public void send(Object o){
         try{
             dout = new DataOutputStream(listener.getOutputStream());
-            dout.writeUTF(str);
+            dout.writeUTF(o.toString());
             dout.flush();
+        } catch(IOException ioe){
+            ioe.printStackTrace();
+        }
+    }
+
+    public void closeAll(){
+        try{
+            server.close();
+            listener.close();
+            din.close();
+            dout.close();
         } catch(IOException ioe){
             ioe.printStackTrace();
         }
