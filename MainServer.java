@@ -11,6 +11,6 @@ public class MainServer{
         mata = mazo.whoKillsIt(buscada);    //me fijo que carta mata a la que me envió el cliente
         es.send(mata.hashCode());           //se la envío
 
-        es.closeAll();
+        es.close();
     }
 }

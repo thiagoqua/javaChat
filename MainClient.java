@@ -12,6 +12,6 @@ public class MainClient{
 
         System.out.println("recibi la carta\t" + mazo.search(Integer.parseInt(recibo)));
 
-        ec.closeAll();
+        ec.close();
     }
 }

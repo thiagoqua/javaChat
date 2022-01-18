@@ -1,8 +1,6 @@
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -18,7 +16,8 @@ public class EnvidoClient{
             client = new Socket(InetAddress.getByName(ip),port);
             System.out.println("client succesfully connected");
         } catch(IOException ioe){
-            ioe.printStackTrace();
+            System.out.println("no pudimos crear el cliente. abortamos.");
+            System.exit(2);
         }
     }
 
@@ -28,7 +27,8 @@ public class EnvidoClient{
             din = new DataInputStream(client.getInputStream());
             readed = din.readUTF();
         } catch(IOException ioe){
-            ioe.printStackTrace();
+            System.out.println("no pudimos recibir el paquete. abortamos.");
+            System.exit(3);
         }
     return readed;}
 
@@ -38,17 +38,19 @@ public class EnvidoClient{
             dout.writeUTF(o.toString());
             dout.flush();
         } catch(IOException ioe){
-            ioe.printStackTrace();
+            System.out.println("no pudimos enviar el paquete. abortamos.");
+            System.exit(4);
         }
     }
 
-    public void closeAll(){
+    public void close(){
         try{
             client.close();
             din.close();
             dout.close();
         } catch(IOException ioe){
-            ioe.printStackTrace();
+            System.out.println("no pudimos cerrar el cliente. abortamos.");
+            //System.exit(2);
         }
     }
 }

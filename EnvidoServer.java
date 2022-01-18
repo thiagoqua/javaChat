@@ -1,6 +1,7 @@
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -16,7 +17,8 @@ public class EnvidoServer{
             server = new ServerSocket(port);
             System.out.println("server succesfully created");
         } catch(IOException ioe){
-            ioe.printStackTrace();
+            System.out.println("no pudimos crear el servidor. abortamos.");
+            System.exit(5);
         }
     }
 
@@ -27,7 +29,8 @@ public class EnvidoServer{
             din = new DataInputStream(listener.getInputStream());
             readed = din.readUTF();
         } catch(IOException ioe){
-            ioe.printStackTrace();
+            System.out.println("no pudimos recibir el paquete. abortamos.");
+            System.exit(6);
         }
     return readed;}
 
@@ -37,18 +40,20 @@ public class EnvidoServer{
             dout.writeUTF(o.toString());
             dout.flush();
         } catch(IOException ioe){
-            ioe.printStackTrace();
+            System.out.println("no pudimos enviar el paquete. abortamos.");
+            System.exit(7);
         }
     }
 
-    public void closeAll(){
+    public void close(){
         try{
             server.close();
             listener.close();
             din.close();
             dout.close();
         } catch(IOException ioe){
-            ioe.printStackTrace();
+            System.out.println("no pudimos cerrar el servidor. abortamos.");
+            //System.exit(2);
         }
     }
 }
