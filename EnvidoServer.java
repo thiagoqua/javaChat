@@ -59,7 +59,6 @@ public class EnvidoServer{
 
     public void enable(){
         try{
-            listener = server.accept();
             in = listener.getInputStream();
             out = listener.getOutputStream();
             breader = new BufferedReader(new InputStreamReader(in));
@@ -70,6 +69,17 @@ public class EnvidoServer{
         }
         isConnected = true;
     }
+
+    public boolean somebodyIsConnected(){
+        try{
+            listener = server.accept();
+            if(listener.isConnected()){
+                System.out.println("cliente con ip '" + listener.getInetAddress() + " conectado al puerto " +
+                listener.getPort() + " de manera exitosa.");
+                return true;
+            }
+        } catch(IOException ioe){}
+    return false;}
 
     public void close(){
         try{

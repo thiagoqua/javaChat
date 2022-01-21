@@ -8,12 +8,14 @@ public class MainServer{
         String entrada,recibo;
         entrada = recibo = new String();
 
+        if(!es.somebodyIsConnected())
+            System.out.println("no se conecto ningun cliente");
+
         while((recibo = es.receive()) != null){
             System.out.println(recibo);
             entrada = sc.nextLine();
             es.send("servidor: " + entrada);
         }
-        System.out.println("sali");
 
         es.close();
     }
